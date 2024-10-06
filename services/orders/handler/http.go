@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/asliddinberdiev/kitchen_microservice/services/common/genproto/orders"
+	"github.com/asliddinberdiev/kitchen_microservice/services/common/util"
 	"github.com/asliddinberdiev/kitchen_microservice/services/orders/types"
 )
 
@@ -15,15 +16,13 @@ func NewHttpOrdersHandler(orderService types.OrderService) *OrdersHttpHandler {
 	return &OrdersHttpHandler{orderService: orderService}
 }
 
-
-func (h *OrdersHttpHandler) RegisterRouter (router *http.ServeMux) {
+func (h *OrdersHttpHandler) RegisterRouter(router *http.ServeMux) {
 	router.HandleFunc("POST /orders", h.CreateOrder)
 }
 
 func (h *OrdersHttpHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	var req orders.CreateOrderRequest
-	err := util.ParseJSON(r, &req)
-	if err != nil {
+	if err := util.ParseJSON(r, &req); err != nil {
 		util.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
